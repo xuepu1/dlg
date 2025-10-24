@@ -39,9 +39,13 @@ if len(args.image) > 1:
     gt_data = Image.open(args.image)
     gt_data = tp(gt_data).to(device)
 
-
+#作用：为数据增加 “批次维度（batch dimension）”。
+#多数神经网络的输入要求第一个维度为批次大小（即使只有一个样本，也需要显式的批次维度，如 (batch_size, C, H, W)），这里 batch_size=1。
 gt_data = gt_data.view(1, *gt_data.size())
+#dst[img_index] 表示取第 img_index 个样本的二元组（包含该样本的数据和标签）
+#dst[img_index][1] 取的是标签，而 dst[img_index][0] 取的是数据
 gt_label = torch.Tensor([dst[img_index][1]]).long().to(device)
+#作用：保证标签张量的形状与 “批次大小 = 1” 匹配（后续处理更统一）
 gt_label = gt_label.view(1, )
 gt_onehot_label = label_to_onehot(gt_label)
 
